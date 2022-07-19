@@ -752,6 +752,9 @@ type MarketTotalValueSnapshot @entity {
 
   " Pending LP Withdrawals "
   pendingWithdrawals: BigInt!
+
+  " Latest Board Cache Update "
+  boardCacheUpdateTimestamp: Int!
 }
 
 type MarketSNXFeesSnapshot @entity {

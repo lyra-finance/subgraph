@@ -15,7 +15,7 @@ import {
 } from '../../generated/schema'
 import { updateMarketGreeks } from '../market'
 import { Address, Bytes, dataSource, log } from '@graphprotocol/graph-ts'
-import { Entity, HOURLY_PERIODS, PERIODS, Snapshot, UNIT, ZERO } from '../lib'
+import { Entity, HOURLY_PERIODS, HOUR_SECONDS, PERIODS, Snapshot, UNIT, ZERO } from '../lib'
 
 export function handleGlobalCacheUpdated(event: GlobalCacheUpdated): void {
   let context = dataSource.context()
@@ -124,7 +124,14 @@ export function handleStrikeCacheUpdated(event: StrikeCacheUpdated): void {
   strikeSnapshot.save()
 }
 
-export function handleBoardCacheUpdated(event: BoardCacheUpdated): void {}
+export function handleBoardCacheUpdated(event: BoardCacheUpdated): void {
+  let context = dataSource.context()
+  let optionMarketId = context.getString('market')
+  let timestamp = event.block.timestamp.toI32()
+  let marketTotalValueSnapshot = Entity.loadOrCreateMarketTotalValueSnapshot(optionMarketId, HOUR_SECONDS, timestamp)
+  marketTotalValueSnapshot.boardCacheUpdateTimestamp = timestamp
+  marketTotalValueSnapshot.save()
+}
 
 export function handleGreekCacheParametersSet(event: GreekCacheParametersSet): void {
   let context = dataSource.context()
